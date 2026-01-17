@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-1 text-danger">404</h1>
+            <h2 class="mb-4">Page Not Found</h2>
+            <p class="lead text-muted mb-4">
+                The page you requested (<code><%= url %></code>) could not be found.
+            </p>
+            <div class="mt-4">
+                <% if (user) { %>
+                    <a href="/dashboard" class="btn btn-primary btn-lg">
+                        <i class="fas fa-home"></i> Go to Dashboard
+                    </a>
+                <% } else { %>
+                    <a href="/auth/login" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> Go to Login
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

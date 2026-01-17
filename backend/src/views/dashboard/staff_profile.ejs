@@ -1,0 +1,209 @@
+<% const pageTitle = 'Staff Profile'; %>
+<%- include('../partials/header') %>
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user-circle me-2"></i>Staff Profile</h2>
+        <a href="/dashboard/staff" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Staff
+        </a>
+    </div>
+
+    <% if (success && success.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i><%= success[0] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <% if (error && error.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i><%= error[0] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-circle fa-5x text-primary"></i>
+                    </div>
+                    <h4 class="mb-1"><%= staff.username %></h4>
+                    <p class="text-muted mb-3">
+                        <% if (staff.role === 'Owner') { %>
+                            <span class="badge bg-danger"><i class="fas fa-crown me-1"></i>Owner</span>
+                        <% } else if (staff.role === 'Servers Manager') { %>
+                            <span class="badge bg-primary"><i class="fas fa-server me-1"></i>Servers Manager</span>
+                        <% } else if (staff.role === 'Rankings Manager') { %>
+                            <span class="badge bg-success"><i class="fas fa-ranking-star me-1"></i>Rankings Manager</span>
+                        <% } else if (staff.role === 'None') { %>
+                            <span class="badge bg-secondary"><i class="fas fa-eye me-1"></i>None</span>
+                        <% } %>
+                    </p>
+                    <p class="mb-0">
+                        <% if (staff.isActive) { %>
+                            <span class="badge bg-success">Active</span>
+                        <% } else { %>
+                            <span class="badge bg-secondary">Inactive</span>
+                        <% } %>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <i class="fas fa-shield-alt me-2"></i>Permissions
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-<%= ['Owner','Servers Manager'].includes(staff.role) ? 'check text-success' : 'times text-danger' %> me-2"></i>
+                            Manage Servers
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-<%= ['Owner','Rankings Manager'].includes(staff.role) ? 'check text-success' : 'times text-danger' %> me-2"></i>
+                            Manage Rankings
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-<%= ['Owner','Rankings Manager'].includes(staff.role) ? 'check text-success' : 'times text-danger' %> me-2"></i>
+                            Manage Users
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-<%= staff.role === 'Owner' ? 'check text-success' : 'times text-danger' %> me-2"></i>
+                            Manage Staff
+                        </li>
+                        <li>
+                            <i class="fas fa-<%= staff.role === 'Owner' ? 'check text-success' : 'times text-danger' %> me-2"></i>
+                            Full System Access
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-2"></i>Profile Information
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">Username:</th>
+                            <td><%= staff.username %></td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td><%= staff.email || 'Not set' %></td>
+                        </tr>
+                        <tr>
+                            <th>Discord ID:</th>
+                            <td><%= staff.discordId || 'Not set' %></td>
+                        </tr>
+                        <tr>
+                            <th>Role:</th>
+                            <td><%= staff.role %></td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <% if (staff.isActive) { %>
+                                    <span class="badge bg-success">Active</span>
+                                <% } else { %>
+                                    <span class="badge bg-secondary">Inactive</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Last Login:</th>
+                            <td>
+                                <% if (staff.lastLogin) { %>
+                                    <%= new Date(staff.lastLogin).toLocaleString() %>
+                                <% } else { %>
+                                    Never
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Created:</th>
+                            <td><%= new Date(staff.createdAt).toLocaleString() %></td>
+                        </tr>
+                        <tr>
+                            <th>Created By:</th>
+                            <td><%= staff.createdBy ? staff.createdBy.username : 'System' %></td>
+                        </tr>
+                        <% if (staff.notes) { %>
+                        <tr>
+                            <th>Notes:</th>
+                            <td><%= staff.notes %></td>
+                        </tr>
+                        <% } %>
+                    </table>
+                </div>
+            </div>
+
+            <% if (isOwnProfile) { %>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <i class="fas fa-edit me-2"></i>Update My Profile
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/dashboard/staff/profile/update">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="email" 
+                                       value="<%= staff.email || '' %>">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="discordId" class="form-label">Discord ID</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="discordId" 
+                                       name="discordId" 
+                                       value="<%= staff.discordId || '' %>">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password1" class="form-label">Password 1</label>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password1" 
+                                       name="password1" 
+                                       placeholder="Leave blank to keep current">
+                                <small class="text-muted">First password for dual authentication</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="password2" class="form-label">Password 2</label>
+                                <input type="password" 
+                                       class="form-control" 
+                                       id="password2" 
+                                       name="password2" 
+                                       placeholder="Leave blank to keep current">
+                                <small class="text-muted">Second password for dual authentication</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

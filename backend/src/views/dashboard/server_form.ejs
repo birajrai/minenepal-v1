@@ -1,0 +1,297 @@
+<% const pageTitle=server ? 'Edit Server' : 'Add Server' ; %>
+    <%- include('../partials/header') %>
+
+        <!-- EasyMDE Markdown Editor CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+        <style>
+            .EasyMDEContainer .CodeMirror {
+                border-radius: 4px;
+                min-height: 300px;
+            }
+
+            .editor-toolbar {
+                border-radius: 4px 4px 0 0;
+                background: #f8f9fa;
+            }
+
+            .CodeMirror-fullscreen,
+            .editor-toolbar.fullscreen {
+                z-index: 9999;
+            }
+        </style>
+
+        <div class="container-fluid px-4">
+            <% if (typeof error !=='undefined' && error && error.length> 0) { %>
+                <div class="alert alert-danger mt-3" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <%= error[0] %>
+                </div>
+                <% } %>
+                    <div class="mb-4">
+                        <a href="/dashboard/servers" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Servers
+                        </a>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-<%= server ? 'edit' : 'plus' %> me-2"></i>
+                                        <%= action %> Server
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form
+                                        action="<%= server ? `/dashboard/servers/edit/${server._id}` : '/dashboard/servers/add' %>"
+                                        method="POST">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="name" class="form-label">Server Name <span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="name" name="name"
+                                                    value="<%= server ? server.name : '' %>" required>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label for="slug" class="form-label">Slug <span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="slug" name="slug"
+                                                    value="<%= server ? server.slug : '' %>" required>
+                                                <small class="text-muted">URL-friendly identifier (e.g.,
+                                                    minecraft-nepal)</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-8 mb-3">
+                                                <label for="ip" class="form-label">IP Address <span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="ip" name="ip"
+                                                    value="<%= server ? server.ip : '' %>" required>
+                                            </div>
+
+                                            <div class="col-md-4 mb-3">
+                                                <label for="port" class="form-label">Port <span
+                                                        class="text-danger">*</span></label>
+                                                <input type="number" class="form-control" id="port" name="port"
+                                                    value="<%= server ? server.port : '25565' %>" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <textarea class="form-control" id="description" name="description"
+                                                rows="2"><%= server ? server.description : '' %></textarea>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label for="content" class="form-label">
+                                                <i class="fas fa-file-alt me-1"></i>Content (Markdown Editor)
+                                            </label>
+                                            <textarea id="content"
+                                                name="content"><%= server ? server.content : '' %></textarea>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="gamemodes" class="form-label">Gamemodes</label>
+                                                <input type="text" class="form-control" id="gamemodes" name="gamemodes"
+                                                    value="<%= server && server.gamemodes ? server.gamemodes.join(', ') : '' %>">
+                                                <small class="text-muted">Comma-separated (e.g., SMP, Survival,
+                                                    Creative)</small>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label for="server_type" class="form-label">Server Type</label>
+                                                <select class="form-select" id="server_type" name="server_type">
+                                                    <option value="Java" <%=server && server.server_type==='Java'
+                                                        ? 'selected' : '' %>>Java</option>
+                                                    <option value="Bedrock" <%=server && server.server_type==='Bedrock'
+                                                        ? 'selected' : '' %>>Bedrock</option>
+                                                    <option value="Java & Bedrock" <%=server &&
+                                                        server.server_type==='Java & Bedrock' ? 'selected' : '' %>>Java
+                                                        &
+                                                        Bedrock</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="bedrock_ip" class="form-label">Bedrock IP (Optional)</label>
+                                                <input type="text" class="form-control" id="bedrock_ip"
+                                                    name="bedrock_ip" value="<%= server ? server.bedrock_ip : '' %>">
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label for="bedrock_port" class="form-label">Bedrock Port
+                                                    (Optional)</label>
+                                                <input type="number" class="form-control" id="bedrock_port"
+                                                    name="bedrock_port"
+                                                    value="<%= server ? server.bedrock_port : '' %>">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label for="website" class="form-label"><i
+                                                        class="fas fa-globe me-1"></i>Website</label>
+                                                <input type="url" class="form-control" id="website" name="website"
+                                                    value="<%= server ? server.website : '' %>"
+                                                    placeholder="https://example.com">
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label for="discord" class="form-label"><i
+                                                        class="fab fa-discord me-1"></i>Discord</label>
+                                                <input type="url" class="form-control" id="discord" name="discord"
+                                                    value="<%= server ? server.discord : '' %>"
+                                                    placeholder="https://discord.gg/...">
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label for="youtube" class="form-label"><i
+                                                        class="fab fa-youtube me-1"></i>YouTube</label>
+                                                <input type="url" class="form-control" id="youtube" name="youtube"
+                                                    value="<%= server ? server.youtube : '' %>"
+                                                    placeholder="https://youtube.com/...">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="image" class="form-label">Server Icon / Image URL</label>
+                                                <input type="url" class="form-control" id="image" name="image"
+                                                    value="<%= server ? server.image : '' %>"
+                                                    placeholder="https://example.com/images/server-icon.png">
+                                                <small class="text-muted">Full URL to server icon (preferred). If you use a path, ensure it's served by your static files.</small>
+                                                <div class="mt-2">
+                                                    <img id="imagePreview" src="<%= server && server.image ? server.image : '' %>" alt="Preview" style="max-width:120px; max-height:80px; display: <%= server && server.image ? 'inline-block' : 'none' %>; border-radius:6px; border:1px solid #ddd;" />
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label for="server_icon" class="form-label">Server Icon (small)</label>
+                                                <input type="url" class="form-control" id="server_icon" name="server_icon"
+                                                    value="<%= server ? server.server_icon : '' %>"
+                                                    placeholder="https://example.com/images/server-icon-small.png">
+                                                <small class="text-muted">A small square icon used in lists and embeds (e.g., 64x64 PNG).</small>
+                                                <div class="mt-2">
+                                                    <img id="serverIconPreview" src="<%= server && server.server_icon ? server.server_icon : '' %>" alt="Icon Preview" style="width:48px;height:48px;object-fit:cover;border-radius:6px;display: <%= server && server.server_icon ? 'inline-block' : 'none' %>;border:1px solid #ddd;" />
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label for="vote" class="form-label">Vote Count</label>
+                                                <input type="number" class="form-control" id="vote" name="vote"
+                                                    value="<%= server ? server.vote : '0' %>">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="votingRewardEnabled" name="votingRewardEnabled" <%= (server && server.votingRewardEnabled) ? 'checked' : '' %>>
+                                                <label class="form-check-label" for="votingRewardEnabled">
+                                                    Voting Reward Enabled (requires secret key for rewards)
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="secret" class="form-label">Vote Secret Key</label>
+                                            <input type="text" class="form-control" id="secret" name="secret" value="<%= server && server.secret ? server.secret : '' %>" placeholder="Enter secret key from plugin config.yml">
+                                            <div class="form-text">Enter the secret key from your Minecraft plugin's <code>config.yml</code> for vote authentication.</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="disabled"
+                                                    name="disabled" <%=server && server.disabled ? 'checked' : '' %>>
+                                                <label class="form-check-label" for="disabled">
+                                                    Disable this server (won't appear in public API)
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="featured"
+                                                    name="featured" <%=server && server.featured ? 'checked' : '' %>>
+                                                <label class="form-check-label" for="featured">
+                                                    <i class="fas fa-star text-warning me-1"></i>
+                                                    Mark as Featured Server (highlighted in listings)
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a href="/dashboard/servers" class="btn btn-secondary">
+                                                <i class="fas fa-times me-1"></i>Cancel
+                                            </a>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-1"></i>Save Server
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+
+        <!-- EasyMDE Markdown Editor JS -->
+        <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+        <script>
+            // Initialize EasyMDE for the content field
+            const easyMDE = new EasyMDE({
+                element: document.getElementById('content'),
+                spellChecker: false,
+                placeholder: "Enter server description in Markdown...\n\n**Example:**\n# Welcome to Our Server\n\n## Features\n- Custom plugins\n- Active community\n- Regular events",
+                toolbar: [
+                    "bold", "italic", "heading", "|",
+                    "quote", "unordered-list", "ordered-list", "|",
+                    "link", "image", "table", "|",
+                    "preview", "side-by-side", "fullscreen", "|",
+                    "guide"
+                ],
+                status: ["lines", "words", "cursor"],
+                minHeight: "350px",
+                maxHeight: "600px",
+                renderingConfig: {
+                    singleLineBreaks: false,
+                    codeSyntaxHighlighting: true,
+                },
+                sideBySideFullscreen: false
+            });
+                // Image preview update
+                const imageInput = document.getElementById('image');
+                const imagePreview = document.getElementById('imagePreview');
+                if (imageInput) {
+                    imageInput.addEventListener('input', () => {
+                        const val = imageInput.value && imageInput.value.trim();
+                        if (!val) {
+                            imagePreview.style.display = 'none';
+                            imagePreview.src = '';
+                            return;
+                        }
+                        imagePreview.src = val;
+                        imagePreview.style.display = 'inline-block';
+                    });
+                }
+                const serverIconInput = document.getElementById('server_icon');
+                const serverIconPreview = document.getElementById('serverIconPreview');
+                if (serverIconInput) {
+                    serverIconInput.addEventListener('input', () => {
+                        const val = serverIconInput.value && serverIconInput.value.trim();
+                        if (!val) {
+                            serverIconPreview.style.display = 'none';
+                            serverIconPreview.src = '';
+                            return;
+                        }
+                        serverIconPreview.src = val;
+                        serverIconPreview.style.display = 'inline-block';
+                    });
+                }
+        </script>
+
+        <%- include('../partials/footer') %>

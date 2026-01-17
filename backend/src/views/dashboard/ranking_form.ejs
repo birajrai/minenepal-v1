@@ -1,0 +1,228 @@
+<% const pageTitle='Edit User Rankings' ; %>
+    <%- include('../partials/header') %>
+
+        <div class="container-fluid px-4">
+            <div class="mb-4">
+                <a href="/dashboard/rankings" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Rankings
+                </a>
+            </div>
+
+            <% if (error && error.length> 0) { %>
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <%= error[0] %>
+                </div>
+                <% } %>
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-edit me-2"></i>Edit User Rankings
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>User:</strong>
+                                        <%= userData.minecraftName || userData.discordId %>
+                                            <span class="text-muted">(Discord ID: <%= userData.discordId %>)</span>
+                                    </div>
+
+                                    <form action="/dashboard/rankings/edit/<%= userData._id %>" method="POST"
+                                        id="rankingForm">
+
+                                        <!-- Gamemodes Section -->
+                                        <div class="mb-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h5 class="mb-0"><i class="fas fa-gamepad me-2"></i>Gamemodes</h5>
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                    onclick="addGamemode()">
+                                                    <i class="fas fa-plus me-1"></i>Add Gamemode
+                                                </button>
+                                            </div>
+
+                                            <div id="gamemodesContainer">
+                                                <% const gamemodes=userData.points ? Object.keys(userData.points) : [];
+                                                    const availableRanks=['Unranked', 'HT1' , 'LT1' , 'HT2' , 'LT2'
+                                                    , 'HT3' , 'LT3' , 'HT4' , 'LT4' , 'HT5' , 'LT5' ]; if
+                                                    (gamemodes.length===0) { %>
+                                                    <div class="text-center text-muted py-4">
+                                                        <i class="fas fa-inbox fa-3x mb-3 opacity-25"></i>
+                                                        <p class="mb-0">No gamemodes yet. Click "Add Gamemode" to start.
+                                                        </p>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <% gamemodes.forEach((gamemode, index)=> { %>
+                                                            <div class="gamemode-item card mb-3"
+                                                                data-index="<%= index %>">
+                                                                <div class="card-body">
+                                                                    <div class="row align-items-center">
+                                                                        <div class="col-md-3">
+                                                                            <label class="form-label fw-bold">Gamemode
+                                                                                Name</label>
+                                                                            <input type="text" class="form-control"
+                                                                                name="gamemode_name[]"
+                                                                                value="<%= gamemode %>" required>
+                                                                        </div>
+                                                                        <div class="col-md-2">
+                                                                            <label
+                                                                                class="form-label fw-bold">Points</label>
+                                                                            <input type="number" class="form-control"
+                                                                                name="gamemode_points[]"
+                                                                                value="<%= userData.points[gamemode] || 0 %>"
+                                                                                required>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <label class="form-label fw-bold">Current
+                                                                                Rank</label>
+                                                                            <select class="form-select"
+                                                                                name="gamemode_current_rank[]">
+                                                                                <% const currentRank=userData.ranks &&
+                                                                                    userData.ranks[gamemode] &&
+                                                                                    userData.ranks[gamemode].current ?
+                                                                                    userData.ranks[gamemode].current
+                                                                                    : 'Unranked' ; %>
+                                                                                    <% availableRanks.forEach(rank=> {
+                                                                                        %>
+                                                                                        <option value="<%= rank %>"
+                                                                                            <%=currentRank===rank
+                                                                                            ? 'selected' : '' %>><%=
+                                                                                                rank %>
+                                                                                        </option>
+                                                                                        <% }); %>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <label class="form-label fw-bold">Previous
+                                                                                Rank</label>
+                                                                            <select class="form-select"
+                                                                                name="gamemode_previous_rank[]">
+                                                                                <% const previousRank=userData.ranks &&
+                                                                                    userData.ranks[gamemode] &&
+                                                                                    userData.ranks[gamemode].previous ?
+                                                                                    userData.ranks[gamemode].previous
+                                                                                    : 'Unranked' ; %>
+                                                                                    <% availableRanks.forEach(rank=> {
+                                                                                        %>
+                                                                                        <option value="<%= rank %>"
+                                                                                            <%=previousRank===rank
+                                                                                            ? 'selected' : '' %>><%=
+                                                                                                rank %>
+                                                                                        </option>
+                                                                                        <% }); %>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="col-md-1 text-end">
+                                                                            <label
+                                                                                class="form-label fw-bold d-block">&nbsp;</label>
+                                                                            <button type="button"
+                                                                                class="btn btn-danger btn-sm"
+                                                                                onclick="removeGamemode(this)">
+                                                                                <i class="fas fa-trash"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <% }); %>
+                                                                <% } %>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a href="/dashboard/rankings" class="btn btn-secondary">
+                                                <i class="fas fa-times me-1"></i>Cancel
+                                            </a>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-1"></i>Save Changes
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        </div>
+
+        <script>
+            let gamemodeIndex = Number('<%= userData.points ? Object.keys(userData.points).length : 0 %>');
+            const ranks = ['Unranked', 'HT1', 'LT1', 'HT2', 'LT2', 'HT3', 'LT3', 'HT4', 'LT4', 'HT5', 'LT5'];
+
+            function addGamemode() {
+                const container = document.getElementById('gamemodesContainer');
+
+                // Remove "no gamemodes" message if it exists
+                const emptyMessage = container.querySelector('.text-center');
+                if (emptyMessage) {
+                    emptyMessage.remove();
+                }
+
+                const newGamemode = document.createElement('div');
+                newGamemode.className = 'gamemode-item card mb-3';
+                newGamemode.setAttribute('data-index', gamemodeIndex);
+
+                // Build rank options HTML
+                let rankOptionsHTML = '';
+                ranks.forEach(rank => {
+                    const selected = rank === 'Unranked' ? 'selected' : '';
+                    rankOptionsHTML += `<option value="${rank}" ${selected}>${rank}</option>`;
+                });
+
+                newGamemode.innerHTML = `
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Gamemode Name</label>
+          <input type="text" class="form-control" name="gamemode_name[]" placeholder="e.g., SMP" required>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-bold">Points</label>
+          <input type="number" class="form-control" name="gamemode_points[]" value="0" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Current Rank</label>
+          <select class="form-select" name="gamemode_current_rank[]">
+            ${rankOptionsHTML}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-bold">Previous Rank</label>
+          <select class="form-select" name="gamemode_previous_rank[]">
+            ${rankOptionsHTML}
+          </select>
+        </div>
+        <div class="col-md-1 text-end">
+          <label class="form-label fw-bold d-block">&nbsp;</label>
+          <button type="button" class="btn btn-danger btn-sm" onclick="removeGamemode(this)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+                container.appendChild(newGamemode);
+                gamemodeIndex++;
+            }
+
+            function removeGamemode(button) {
+                const gamemodeItem = button.closest('.gamemode-item');
+                gamemodeItem.remove();
+
+                // Show "no gamemodes" message if all removed
+                const container = document.getElementById('gamemodesContainer');
+                if (container.children.length === 0) {
+                    container.innerHTML = `
+      <div class="text-center text-muted py-4">
+        <i class="fas fa-inbox fa-3x mb-3 opacity-25"></i>
+        <p class="mb-0">No gamemodes yet. Click "Add Gamemode" to start.</p>
+      </div>
+    `;
+                }
+            }
+        </script>
+
+        <%- include('../partials/footer') %>

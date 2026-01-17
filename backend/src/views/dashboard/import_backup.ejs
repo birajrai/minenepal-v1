@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Import Backup - MineNepal Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .container-custom {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            padding: 20px;
+            border: none;
+        }
+
+        .card-header h4 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #1a1d1f;
+            margin-bottom: 10px;
+        }
+
+        .form-control, .form-select {
+            border: 1.5px solid #e8ecef;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.08);
+        }
+
+        .textarea-container {
+            position: relative;
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .upload-area {
+            border: 2px dashed #e8ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: #fafbfc;
+        }
+
+        .upload-area:hover {
+            border-color: #0d6efd;
+            background: rgba(13, 110, 253, 0.02);
+        }
+
+        .upload-area.dragover {
+            border-color: #0d6efd;
+            background: rgba(13, 110, 253, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            color: #0d6efd;
+            margin-bottom: 10px;
+        }
+
+        .mode-info {
+            background: #e7f3ff;
+            border-left: 4px solid #0d6efd;
+            padding: 12px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .mode-info.replace {
+            background: #ffe7e7;
+            border-left-color: #dc3545;
+        }
+
+        .btn-import {
+            width: 100%;
+            height: 45px;
+            background: #0d6efd;
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn-import:hover {
+            background: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-cancel {
+            width: 100%;
+            height: 45px;
+            background: #e9ecef;
+            border: none;
+            color: #495057;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn-cancel:hover {
+            background: #dee2e6;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .section-divider {
+            margin: 25px 0;
+            padding: 20px 0;
+            border-top: 1px solid #e8ecef;
+        }
+
+        @media (max-width: 576px) {
+            .container-custom {
+                padding: 0 15px;
+            }
+
+            .card-header {
+                padding: 15px;
+            }
+
+            .card-header h4 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/header') %>
+
+    <div class="container-custom">
+        <% if (error && error.length > 0) { %>
+            <div class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <%= error[0] %>
+            </div>
+        <% } %>
+
+        <% if (message && message.length > 0) { %>
+            <div class="alert alert-success" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <%= message[0] %>
+            </div>
+        <% } %>
+
+        <div class="card">
+            <div class="card-header">
+                <h4>
+                    <i class="fas fa-upload"></i>
+                    Import Database Backup
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Import a previously exported backup to restore your database. Choose how you want to handle existing data.
+                </p>
+
+                <form id="importForm" method="POST" action="/dashboard/backup/import">
+                    <!-- Import Mode Selection -->
+                    <div class="mb-4">
+                        <label class="form-label">Import Mode</label>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="importMode" id="modeMerge" value="merge" checked>
+                            <label class="form-check-label" for="modeMerge">
+                                <strong>Merge</strong> - Add/update records, keep existing data
+                            </label>
+                        </div>
+                        <div class="mode-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Safe mode: Existing records are updated, new ones are added. No data is deleted.
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="importMode" id="modeReplace" value="replace">
+                            <label class="form-check-label" for="modeReplace">
+                                <strong>Replace</strong> - Clear all data and import backup (destructive)
+                            </label>
+                        </div>
+                        <div class="mode-info replace" id="replaceWarning" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Warning:</strong> This will delete all existing users, servers, and waitlists. This action cannot be undone!
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Backup Data Input -->
+                    <div class="mb-4">
+                        <label class="form-label">Backup Data</label>
+                        
+                        <!-- File Upload Area -->
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <p class="mb-1">Drag and drop a backup file here or click to select</p>
+                            <small class="text-muted">Supports .json files (exported backups)</small>
+                            <input type="file" id="fileInput" accept=".json" style="display: none;">
+                        </div>
+
+                        <div class="mt-3">
+                            <small class="text-muted d-block mb-2">Or paste JSON data below:</small>
+                            <textarea class="form-control" id="backupData" name="backupData" rows="8" 
+                                placeholder='Paste your backup JSON data here (e.g., {"timestamp": "...", "data": {...}})'></textarea>
+                            <div class="char-count">
+                                <span id="charCount">0</span> characters
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-import">
+                            <i class="fas fa-download me-2"></i>
+                            Import Backup
+                        </button>
+                        <a href="/dashboard" class="btn btn-cancel" style="text-decoration: none;">
+                            <i class="fas fa-times me-2"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    How to Use
+                </h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li class="mb-2">Go to <strong>Dashboard > Backup > Export</strong> to download your database as a JSON file</li>
+                    <li class="mb-2">Keep the backup file in a safe location</li>
+                    <li class="mb-2">To restore, upload the backup file or paste the JSON data</li>
+                    <li class="mb-2">Choose <strong>Merge</strong> to safely add/update records</li>
+                    <li>Choose <strong>Replace</strong> only if you want to completely reset your database</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const backupData = document.getElementById('backupData');
+        const charCount = document.getElementById('charCount');
+        const modeMerge = document.getElementById('modeMerge');
+        const modeReplace = document.getElementById('modeReplace');
+        const replaceWarning = document.getElementById('replaceWarning');
+
+        // File upload handling
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            if (!file.name.endsWith('.json')) {
+                alert('Please select a .json file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const content = e.target.result;
+                    const json = JSON.parse(content);
+                    backupData.value = JSON.stringify(json, null, 2);
+                    updateCharCount();
+                    uploadArea.innerHTML = `
+                        <div class="upload-icon" style="color: #198754;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <p class="mb-1" style="color: #198754;"><strong>${file.name}</strong> loaded successfully</p>
+                        <small class="text-muted">File contains ${Object.keys(json.data || {}).length} data sections</small>
+                    `;
+                } catch (err) {
+                    alert('Invalid JSON file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        backupData.addEventListener('input', updateCharCount);
+
+        function updateCharCount() {
+            charCount.textContent = backupData.value.length;
+        }
+
+        // Mode selection warning
+        modeReplace.addEventListener('change', () => {
+            replaceWarning.style.display = 'block';
+        });
+
+        modeMerge.addEventListener('change', () => {
+            replaceWarning.style.display = 'none';
+        });
+
+        // Form validation
+        document.getElementById('importForm').addEventListener('submit', (e) => {
+            if (!backupData.value.trim()) {
+                e.preventDefault();
+                alert('Please provide backup data (upload file or paste JSON)');
+                return;
+            }
+
+            try {
+                JSON.parse(backupData.value);
+            } catch (err) {
+                e.preventDefault();
+                alert('Invalid JSON format: ' + err.message);
+                return;
+            }
+
+            if (modeReplace.checked) {
+                const confirmed = confirm('⚠️ WARNING: This will delete ALL existing data and cannot be undone. Are you absolutely sure?');
+                if (!confirmed) {
+                    e.preventDefault();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

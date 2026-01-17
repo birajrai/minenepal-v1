@@ -1,0 +1,191 @@
+<% const pageTitle='Admin Dashboard' ; %>
+  <%- include('../partials/header') %>
+
+    <div class="container-fluid px-4">
+      <% if (error && error.length> 0) { %>
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <%= error[0] %>
+        </div>
+        <% } %>
+
+          <% if (stats) { %>
+            <!-- Statistics Cards -->
+            <div class="row g-4 mb-4">
+              <div class="col-md-3">
+                <div class="stat-card primary">
+                  <div class="d-flex align-items-center">
+                    <div class="stat-icon primary">
+                      <i class="fas fa-server"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                      <div class="stat-value">
+                        <%= stats.totalServers %>
+                      </div>
+                      <div class="stat-label">Total Servers</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card success">
+                  <div class="d-flex align-items-center">
+                    <div class="stat-icon success">
+                      <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                      <div class="stat-value">
+                        <%= stats.activeServers %>
+                      </div>
+                      <div class="stat-label">Active Servers</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card info">
+                  <div class="d-flex align-items-center">
+                    <div class="stat-icon info">
+                      <i class="fas fa-users"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                      <div class="stat-value">
+                        <%= stats.totalUsers %>
+                      </div>
+                      <div class="stat-label">Total Users</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-card warning">
+                  <div class="d-flex align-items-center">
+                    <div class="stat-icon warning">
+                      <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="ms-3 flex-grow-1">
+                      <div class="stat-value">
+                        <%= stats.usersWithPoints %>
+                      </div>
+                      <div class="stat-label">Active Players</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions & Top Players -->
+            <div class="row g-4">
+              <div class="col-md-6">
+                <div class="quick-actions">
+                  <h5 class="section-title">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                  </h5>
+
+                  <a href="/dashboard/servers" class="quick-action-btn">
+                    <div class="quick-action-icon" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+                      <i class="fas fa-server"></i>
+                    </div>
+                    <div>
+                      <div class="fw-semibold">Manage Servers</div>
+                      <small class="text-muted">Add, edit, or remove servers</small>
+                    </div>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                  </a>
+
+                  <a href="/dashboard/rankings" class="quick-action-btn">
+                    <div class="quick-action-icon" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
+                      <i class="fas fa-ranking-star"></i>
+                    </div>
+                    <div>
+                      <div class="fw-semibold">Manage Rankings</div>
+                      <small class="text-muted">Edit user points and ranks</small>
+                    </div>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                  </a>
+
+                  <a href="/api/leaderboard" target="_blank" class="quick-action-btn">
+                    <div class="quick-action-icon" style="background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+                      <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                      <div class="fw-semibold">View Leaderboard API</div>
+                      <small class="text-muted">Check public leaderboard data</small>
+                    </div>
+                    <i class="fas fa-external-link-alt ms-auto"></i>
+                  </a>
+
+                  <a href="/api/servers" target="_blank" class="quick-action-btn">
+                    <div class="quick-action-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                      <i class="fas fa-database"></i>
+                    </div>
+                    <div>
+                      <div class="fw-semibold">View Servers API</div>
+                      <small class="text-muted">Check public server list</small>
+                    </div>
+                    <i class="fas fa-external-link-alt ms-auto"></i>
+                  </a>
+
+                  <a href="/dashboard/backup/export" class="quick-action-btn">
+                    <div class="quick-action-icon" style="background: rgba(108, 117, 125, 0.1); color: #6c757d;">
+                      <i class="fas fa-download"></i>
+                    </div>
+                    <div>
+                      <div class="fw-semibold">Export Backup</div>
+                      <small class="text-muted">Download database backup</small>
+                    </div>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                  </a>
+
+                  <a href="/dashboard/backup/import" class="quick-action-btn">
+                    <div class="quick-action-icon" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
+                      <i class="fas fa-upload"></i>
+                    </div>
+                    <div>
+                      <div class="fw-semibold">Import Backup</div>
+                      <small class="text-muted">Restore from backup file</small>
+                    </div>
+                    <i class="fas fa-chevron-right ms-auto"></i>
+                  </a>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="top-players">
+                  <h5 class="section-title">
+                    <i class="fas fa-crown me-2"></i>Top 5 Players
+                  </h5>
+
+                  <% if (stats.topPlayers && stats.topPlayers.length> 0) { %>
+                    <% stats.topPlayers.forEach((player, index)=> { %>
+                      <div class="player-item">
+                        <div
+                          class="player-rank <%= index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : 'default' %>">
+                          <%= index + 1 %>
+                        </div>
+                        <div class="flex-grow-1">
+                          <div class="fw-semibold">
+                            <%= player.name %>
+                          </div>
+                          <small class="text-muted">
+                            <%= player.discordId %>
+                          </small>
+                        </div>
+                        <div class="player-points">
+                          <%= player.totalPoints.toLocaleString() %> pts
+                        </div>
+                      </div>
+                      <% }); %>
+                        <% } else { %>
+                          <div class="text-center text-muted py-4">
+                            <i class="fas fa-users-slash fa-3x mb-3 opacity-25"></i>
+                            <p class="mb-0">No players with points yet</p>
+                          </div>
+                          <% } %>
+                </div>
+              </div>
+            </div>
+            <% } %>
+    </div>
+
+    <%- include('../partials/footer') %>

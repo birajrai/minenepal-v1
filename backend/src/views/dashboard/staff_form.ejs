@@ -1,0 +1,157 @@
+<% const pageTitle = isEdit ? 'Edit Staff Member' : 'Add Staff Member'; %>
+<%- include('../partials/header') %>
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-<%= isEdit ? 'edit' : 'plus' %> me-2"></i>
+            <%= isEdit ? 'Edit Staff Member' : 'Add Staff Member' %>
+        </h2>
+        <a href="/dashboard/staff" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back
+        </a>
+    </div>
+
+    <% if (error && error.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i><%= error[0] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-info-circle me-2"></i>Staff Information
+        </div>
+        <div class="card-body">
+            <form method="POST" action="<%= isEdit ? '/dashboard/staff/edit/' + staff._id : '/dashboard/staff/add' %>">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="username" 
+                               name="username" 
+                               value="<%= isEdit && staff ? staff.username : '' %>" 
+                               required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email" 
+                               name="email" 
+                               value="<%= isEdit && staff ? (staff.email || '') : '' %>">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="password1" class="form-label">
+                            Password 1 <span class="text-danger"><%= isEdit ? '' : '*' %></span>
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="password1" 
+                               name="password1" 
+                               placeholder="<%= isEdit ? 'Leave blank to keep current' : '' %>"
+                               <%= isEdit ? '' : 'required' %>>
+                        <small class="text-muted">First password for dual authentication</small>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="password2" class="form-label">
+                            Password 2 <span class="text-danger"><%= isEdit ? '' : '*' %></span>
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="password2" 
+                               name="password2" 
+                               placeholder="<%= isEdit ? 'Leave blank to keep current' : '' %>"
+                               <%= isEdit ? '' : 'required' %>>
+                        <small class="text-muted">Second password for dual authentication</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="">Select Role</option>
+                            <option value="Owner" <%= isEdit && staff && staff.role === 'Owner' ? 'selected' : '' %>>
+                                <i class="fas fa-crown"></i> Owner - Full Control
+                            </option>
+                            <option value="Servers Manager" <%= isEdit && staff && staff.role === 'Servers Manager' ? 'selected' : '' %>>
+                                Servers Manager - Manage Servers
+                            </option>
+                            <option value="Rankings Manager" <%= isEdit && staff && staff.role === 'Rankings Manager' ? 'selected' : '' %>>
+                                Rankings Manager - Manage Rankings & Users
+                            </option>
+                            <option value="None" <%= isEdit && staff && staff.role === 'None' ? 'selected' : '' %>>
+                                None - No special access
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="discordId" class="form-label">Discord ID</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="discordId" 
+                               name="discordId" 
+                               value="<%= isEdit && staff ? (staff.discordId || '') : '' %>"
+                               placeholder="e.g., 835126233455919164">
+                    </div>
+                </div>
+
+                <% if (isEdit) { %>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="isActive" 
+                                       name="isActive" 
+                                       <%= staff && staff.isActive ? 'checked' : '' %>>
+                                <label class="form-check-label" for="isActive">
+                                    Active (Staff member can log in)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+
+                <div class="mb-3">
+                    <label for="notes" class="form-label">Notes</label>
+                    <textarea class="form-control" 
+                              id="notes" 
+                              name="notes" 
+                              rows="3" 
+                              placeholder="Optional notes about this staff member"><%= isEdit && staff ? (staff.notes || '') : '' %></textarea>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Role Permissions:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li><strong>Owner:</strong> Full access to everything including staff management</li>
+                        <li><strong>Servers Manager:</strong> Can only manage servers</li>
+                        <li><strong>Rankings Manager:</strong> Can only manage rankings and users</li>
+                        <li><strong>None:</strong> Can only view dashboard and own profile</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/dashboard/staff" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>
+                        <%= isEdit ? 'Update Staff' : 'Create Staff' %>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

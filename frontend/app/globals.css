@@ -1,0 +1,279 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* New Color Palette as theme variables */
+  --color-onyx: #0b090aff;
+  --color-carbon-black: #161a1dff;
+  --color-dark-garnet: #660708ff;
+  --color-dark-navy: #222222;
+  --color-dark-navy-secondary: #1a1a1a;
+  --color-coffee: #6f4e37ff;
+  --color-coffee-dark: #3e2723ff;
+  --color-coffee-light: #8b6f47ff;
+  --color-sand-900: #8c502e;
+  --color-sand-950: #632811;
+  --color-sand-200: #e8d4b8;
+  --color-sand-300: #d4b896;
+  --color-sand-500: #b89968;
+  --color-silver: #b1a7a6ff;
+  --color-dust-grey: #d3d3d3ff;
+  --color-white-smoke: #f5f3f4ff;
+  --color-white: #e5e9f0ff;
+
+  --color-background: #ffffff;
+  --color-foreground: #1a1a1a;
+  --color-card: #f8f8f8;
+  --color-card-border: #e5e5e5;
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-accent: #1e40af;
+  --color-accent-light: #3b82f6;
+  --color-muted: #d4d4d8;
+  --color-muted-foreground: #71717a;
+  --color-success: #16a34a;
+  --color-warning: #ea580c;
+  --color-error: #dc2626;
+
+  --color-dark-background: #0f172a;
+  --color-dark-foreground: #f1f5f9;
+  --color-dark-card: #1e293b;
+  --color-dark-card-border: #334155;
+  --color-dark-primary: #60a5fa;
+  --color-dark-primary-dark: #93c5fd;
+  --color-dark-accent: #3b82f6;
+  --color-dark-accent-light: #60a5fa;
+  --color-dark-muted: #475569;
+  --color-dark-muted-foreground: #cbd5e1;
+  --color-dark-success: #4ade80;
+  --color-dark-warning: #fb923c;
+  --color-dark-error: #f87171;
+
+  --radius: 0.5rem;
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    /* Default light mode colors */
+    --background: var(--color-background);
+    --foreground: var(--color-foreground);
+    --card: var(--color-card);
+    --card-border: var(--color-card-border);
+    --primary: var(--color-primary);
+    --primary-dark: var(--color-primary-dark);
+    --accent: var(--color-accent);
+    --accent-light: var(--color-accent-light);
+    --muted: var(--color-muted);
+    --muted-foreground: var(--color-muted-foreground);
+    --success: var(--color-success);
+    --warning: var(--color-warning);
+    --error: var(--color-error);
+  }
+
+  .dark {
+    color-scheme: dark;
+    /* Dark mode colors */
+    --background: var(--color-dark-background);
+    --foreground: var(--color-dark-foreground);
+    --card: var(--color-dark-card);
+    --card-border: var(--color-dark-card-border);
+    --primary: var(--color-dark-primary);
+    --primary-dark: var(--color-dark-primary-dark);
+    --accent: var(--color-dark-accent);
+    --accent-light: var(--color-dark-accent-light);
+    --muted: var(--color-dark-muted);
+    --muted-foreground: var(--color-dark-muted-foreground);
+    --success: var(--color-dark-success);
+    --warning: var(--color-dark-warning);
+    --error: var(--color-dark-error);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground transition-colors duration-200;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold text-pretty;
+  }
+
+  h1 {
+    @apply text-4xl tracking-tight;
+  }
+
+  h2 {
+    @apply text-3xl tracking-tight;
+  }
+
+  h3 {
+    @apply text-2xl tracking-tight;
+  }
+
+  h4 {
+    @apply text-xl;
+  }
+
+  p {
+    @apply text-foreground/85 leading-relaxed;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-card rounded-lg border border-card-border shadow-sm transition-all duration-200 hover:shadow-md;
+  }
+
+  .btn-primary {
+    @apply px-6 py-2.5 bg-primary text-white rounded-lg font-semibold transition-all duration-200 hover:bg-primary-dark active:scale-95 shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-2.5 bg-accent/10 text-primary rounded-lg font-semibold transition-all duration-200 hover:bg-accent/20;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-card border border-card-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium;
+  }
+
+  .section-divider {
+    @apply h-px bg-linear-to-r from-transparent via-card-border to-transparent;
+  }
+
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-sm border border-card-border shadow-sm transition-all duration-300 hover:shadow-md hover:bg-card/90;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-linear-to-r from-primary to-accent-light;
+  }
+
+  .offcanvas-menu-bg {
+    background-color: #0f172a;
+  }
+}
+
+/* Markdown (prose) dark-mode support */
+@layer base {
+  .prose {
+    color: var(--foreground);
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    color: var(--foreground);
+  }
+
+  .prose p,
+  .prose li,
+  .prose blockquote {
+    color: color-mix(in oklab, var(--foreground) 85%, transparent);
+  }
+
+  .prose a {
+    color: var(--primary);
+    text-decoration-color: color-mix(in oklab, var(--primary) 60%, transparent);
+  }
+
+  .prose code {
+    background-color: color-mix(in oklab, var(--card) 60%, transparent);
+    color: var(--foreground);
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.25rem;
+  }
+
+  .prose pre {
+    background-color: var(--card);
+    color: var(--foreground);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+  }
+
+  .dark .prose {
+    color: var(--foreground);
+  }
+
+  .dark .prose h1,
+  .dark .prose h2,
+  .dark .prose h3,
+  .dark .prose h4,
+  .dark .prose h5,
+  .dark .prose h6 {
+    color: var(--foreground);
+  }
+
+  .dark .prose p,
+  .dark .prose li,
+  .dark .prose blockquote {
+    color: color-mix(in oklab, var(--foreground) 85%, transparent);
+  }
+
+  .dark .prose a {
+    color: var(--primary);
+    text-decoration-color: color-mix(in oklab, var(--primary) 60%, transparent);
+  }
+
+  .dark .prose code {
+    background-color: color-mix(in oklab, var(--card) 60%, transparent);
+    color: var(--foreground);
+  }
+
+  .dark .prose pre {
+    background-color: var(--card);
+    color: var(--foreground);
+    border-color: var(--card-border);
+  }
+}
+
+/* Animations */
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes rgb {
+  0% {
+    background-position: 0% 50%;
+  }
+  33% {
+    background-position: 50% 50%;
+  }
+  66% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-rgb {
+  animation: rgb 4s linear infinite;
+}

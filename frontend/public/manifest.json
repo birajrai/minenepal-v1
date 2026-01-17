@@ -1,0 +1,33 @@
+{
+    "name": "MineNepal - Minecraft Server List & Rankings",
+    "short_name": "MineNepal",
+    "description": "Discover top Minecraft servers in Nepal. Browse server lists, view player rankings (tierlist), join events, and explore the marketplace.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a0a",
+    "theme_color": "#10b981",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/favicon.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "games",
+        "entertainment",
+        "social"
+    ],
+    "lang": "en-US",
+    "dir": "ltr",
+    "scope": "/",
+    "prefer_related_applications": false
+}
